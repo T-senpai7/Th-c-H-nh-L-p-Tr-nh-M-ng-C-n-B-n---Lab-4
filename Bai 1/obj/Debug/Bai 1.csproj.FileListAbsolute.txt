@@ -1,0 +1,21 @@
+C:\Users\User\source\repos\Bai 1\Bai 1\bin\Debug\Bai 1.exe.config
+C:\Users\User\source\repos\Bai 1\Bai 1\bin\Debug\Bai 1.exe
+C:\Users\User\source\repos\Bai 1\Bai 1\bin\Debug\Bai 1.pdb
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai 1.csproj.AssemblyReference.cache
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai_1.Form1.resources
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai_1.Properties.Resources.resources
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai 1.csproj.GenerateResource.cache
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai 1.csproj.CoreCompileInputs.cache
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai 1.exe
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai 1.pdb
+C:\Users\User\source\repos\Bai 1\Bai 1\obj\Debug\Bai 1.exe.config
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\bin\Debug\Bai 1.exe.config
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\bin\Debug\Bai 1.exe
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\bin\Debug\Bai 1.pdb
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\obj\Debug\Bai 1.csproj.AssemblyReference.cache
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\obj\Debug\Bai_1.Form1.resources
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\obj\Debug\Bai_1.Properties.Resources.resources
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\obj\Debug\Bai 1.csproj.GenerateResource.cache
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\obj\Debug\Bai 1.csproj.CoreCompileInputs.cache
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\obj\Debug\Bai 1.exe
+D:\LAB04-NT106-main\LAB04-NT106-main\Bai 1\obj\Debug\Bai 1.pdb
