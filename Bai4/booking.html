@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Vé - CineBook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0b0f;
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        :root {
+            --primary-bg: #13131a;
+            --card-bg: #1c1c24;
+            --accent-gold: #fbbf24;
+            --accent-glow: rgba(251, 191, 36, 0.4);
+            --text-secondary: #9ca3af;
+            --vat-seat: #ffc107;
+            --normal-seat: #28a745;
+            --vip-seat: #dc3545;
+        }
+
+        header {
+            background: rgba(19, 19, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .connection-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        .seat {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+        }
+
+        .seat.vat {
+            background: var(--vat-seat);
+            color: #000;
+        }
+
+        .seat.normal {
+            background: var(--normal-seat);
+            color: #fff;
+        }
+
+        .seat.vip {
+            background: var(--vip-seat);
+            color: #fff;
+        }
+
+        .seat.selected {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: scale(1.1);
+        }
+
+        .seat.booked {
+            background: #6c757d !important;
+            color: #fff;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .seat:hover:not(.booked) {
+            transform: scale(1.15);
+        }
+
+        .cinema-screen {
+            height: 60px;
+            width: 100%;
+            background: linear-gradient(to bottom, rgba(251, 191, 36, 0.3), transparent);
+            transform: perspective(100px) rotateX(-5deg);
+            margin: 20px 0 40px;
+            border-top: 4px solid var(--accent-gold);
+            border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+            position: relative;
+        }
+
+        .cinema-screen::after {
+            content: "MÀN HÌNH";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(251, 191, 36, 0.5);
+            font-weight: 800;
+            letter-spacing: 5px;
+        }
+
+        .booking-success {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid var(--accent-gold);
+        }
+    </style>
+</head>
+<body>
+    <header class="flex justify-between items-center">
+        <a href="/Viewing.html" class="logo"><i class="fas fa-film mr-2"></i>CineBook</a>
+        <div class="flex items-center gap-4">
+            <button onclick="window.location.href='/Viewing.html'" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+            </button>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Connection Panel -->
+        <div class="connection-panel mb-6">
+            <h3 class="text-xl font-bold mb-4">Kết nối Server</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Server IP</label>
+                    <input type="text" id="server-ip" value="127.0.0.1" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Port</label>
+                    <input type="text" id="server-port" value="8080" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white">
+                </div>
+                <div>
+                    <button id="btn-connect" onclick="connectToServer()" class="w-full px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold">
+                        <i class="fas fa-plug mr-2"></i>Kết nối
+                    </button>
+                </div>
+                <div>
+                    <span id="connection-status" class="inline-block px-4 py-2 bg-gray-700 rounded">
+                        <i class="fas fa-circle text-red-500 mr-2"></i>Chưa kết nối
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Customer Info -->
+                <div class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5">
+                    <h2 class="text-2xl font-bold mb-4">Thông tin khách hàng</h2>
+                    <input type="text" id="customer-name" placeholder="Nhập họ và tên" 
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded text-white">
+                </div>
+
+                <!-- Movie & Room Selection -->
+                <div class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5">
+                    <h2 class="text-2xl font-bold mb-4">Chọn phim và phòng</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Tên phim</label>
+                            <select id="movie-select" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <option value="">-- Chọn phim --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Phòng chiếu</label>
+                            <select id="room-select" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <option value="">-- Chọn phòng --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seat Selection -->
+                <div class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5">
+                    <h2 class="text-2xl font-bold mb-4">Chọn ghế</h2>
+                    
+                    <!-- Legend -->
+                    <div class="flex flex-wrap gap-4 mb-6 text-sm">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-[#ffc107]"></div>
+                            <span>Vé vớt (25%)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-[#28a745]"></div>
+                            <span>Vé thường (100%)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-[#dc3545]"></div>
+                            <span>Vé VIP (200%)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-[#fbbf24]"></div>
+                            <span>Đã chọn</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-[#6c757d]"></div>
+                            <span>Đã đặt</span>
+                        </div>
+                    </div>
+
+                    <div class="cinema-screen"></div>
+
+                    <!-- Seat Grid -->
+                    <div class="flex justify-center">
+                        <div id="seat-grid" class="grid grid-cols-5 gap-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5 sticky top-24">
+                    <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Thông tin đặt vé</h3>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Khách hàng</span>
+                            <span class="font-semibold text-white" id="summary-customer">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Phim</span>
+                            <span class="font-semibold text-white text-right" id="summary-movie">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Phòng</span>
+                            <span class="font-semibold text-white" id="summary-room">-</span>
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <span class="text-gray-400">Ghế đã chọn</span>
+                            <span class="font-semibold text-[#fbbf24] text-right" id="summary-seats">Chưa chọn</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Chi tiết giá</span>
+                            <span class="font-semibold text-white text-xs text-right" id="summary-price-detail">-</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-dashed border-white/20 pt-4 mb-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-gray-400 text-lg">Tổng tiền</span>
+                            <span class="text-3xl font-bold text-[#fbbf24]" id="total-price">0 VNĐ</span>
+                        </div>
+                    </div>
+
+                    <button id="btn-book" onclick="bookTickets()" 
+                            class="w-full px-6 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 rounded-lg font-bold text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                        <i class="fas fa-ticket-alt mr-2"></i>Đặt Vé
+                    </button>
+
+                    <button onclick="clearSelection()" class="w-full mt-3 px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg">
+                        <i class="fas fa-redo mr-2"></i>Xóa lựa chọn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Success Modal -->
+    <div id="booking-success" class="booking-success">
+        <div class="success-content">
+            <div class="text-center mb-6">
+                <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+                <h2 class="text-3xl font-bold text-[#fbbf24]">Đặt vé thành công!</h2>
+            </div>
+            <div id="success-details" class="space-y-4 mb-6"></div>
+            <button onclick="closeSuccess()" class="w-full px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg font-bold text-black">
+                Đóng
+            </button>
+        </div>
+    </div>
+
+    <script src="booking.js"></script>
+</body>
+</html>
+

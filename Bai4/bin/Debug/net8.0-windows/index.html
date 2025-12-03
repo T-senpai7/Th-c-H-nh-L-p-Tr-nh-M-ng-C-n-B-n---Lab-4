@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Tickets - CineBook Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0b0f;
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --primary-bg: #13131a;
+            --card-bg: #1c1c24;
+            --accent-gold: #fbbf24;
+            --accent-glow: rgba(251, 191, 36, 0.4);
+            --text-secondary: #9ca3af;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0b0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gold);
+        }
+
+        header {
+            background: rgba(19, 19, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .movie-card-label {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .movie-card-label input {
+            display: none;
+        }
+
+        .movie-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .poster-wrapper {
+            position: relative;
+            height: 320px;
+            overflow: hidden;
+        }
+
+        .poster-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .movie-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .movie-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .book-btn-mock {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .movie-card:hover .poster-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .movie-card-label input:checked + .movie-card {
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .movie-card-label input:checked + .movie-card .book-btn-mock {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: #000;
+        }
+
+        .step-badge {
+            background: var(--accent-gold);
+            color: #000;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .chip-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .chip {
+            padding: 10px 20px;
+            background: var(--primary-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .chip:hover {
+            border-color: var(--accent-gold);
+            color: #fff;
+        }
+
+        .chip.selected {
+            background: var(--accent-gold);
+            color: #000;
+            border-color: var(--accent-gold);
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .cinema-screen {
+            height: 60px;
+            width: 100%;
+            background: linear-gradient(to bottom, rgba(251, 191, 36, 0.3), transparent);
+            transform: perspective(100px) rotateX(-5deg);
+            box-shadow: 0 20px 50px rgba(251, 191, 36, 0.1);
+            margin-bottom: 40px;
+            position: relative;
+            border-top: 4px solid var(--accent-gold);
+            border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+        }
+
+        .cinema-screen::after {
+            content: "SCREEN";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(251, 191, 36, 0.5);
+            font-weight: 800;
+            letter-spacing: 5px;
+        }
+
+        .seat {
+            height: 35px;
+            width: 35px;
+            border-radius: 6px 6px 10px 10px;
+            background: #2a2a35;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .seat::before, .seat::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 4px;
+            height: 12px;
+            background: #2a2a35;
+            border-radius: 4px;
+        }
+        .seat::before { left: -2px; }
+        .seat::after { right: -2px; }
+
+        .seat.available:hover {
+            background: #fff;
+            transform: scale(1.2);
+            z-index: 2;
+        }
+
+        .seat.selected {
+            background: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .seat.selected::before, .seat.selected::after { background: var(--accent-gold); }
+
+        .seat.booked {
+            background: #3f3f46;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 100px;
+        }
+
+        .checkout-btn {
+            background: linear-gradient(45deg, var(--accent-gold), #f59e0b);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .checkout-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-field {
+            background: var(--primary-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .booking-confirmation {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirmation-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid var(--accent-gold);
+        }
+
+        @media (max-width: 768px) {
+            .poster-wrapper { height: 200px; }
+            .movies-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .seat { width: 25px; height: 25px; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="flex justify-between items-center px-6 py-4">
+        <a href="#" class="logo"><i class="fas fa-film mr-2"></i>CineBook</a>
+        <nav class="hidden md:flex gap-6 text-sm font-semibold text-gray-400">
+            <a href="#" class="hover:text-white transition">Movies</a>
+            <a href="#" class="hover:text-white transition">Cinemas</a>
+            <a href="#" class="hover:text-white transition">Offers</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
+                <i class="fas fa-user text-xs"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
+        
+        <div class="lg:col-span-2 space-y-10">
+
+            <section id="customer-section" class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="step-badge">0</div>
+                    <h2 class="text-2xl font-bold">Customer Information</h2>
+                </div>
+                <input type="text" id="customer-name" class="input-field" placeholder="Enter your full name" required>
+            </section>
+
+            <section id="movie-section">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="step-badge">1</div>
+                    <h2 class="text-2xl font-bold">Select Movie</h2>
+                    <button id="refresh-movies" class="ml-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+                <div class="movies-grid" id="movies-container">
+                    <div class="text-center text-gray-400 py-20">Loading movies...</div>
+                </div>
+            </section>
+
+            <section id="datetime-section" class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="step-badge">2</div>
+                    <h2 class="text-2xl font-bold">Date & Time</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-gray-400 text-sm uppercase tracking-wider mb-4">Select Date</h4>
+                        <div class="chip-grid" id="date-container">
+                            <div class="chip selected">Today</div>
+                            <div class="chip">Tomorrow</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-400 text-sm uppercase tracking-wider mb-4">Select Time</h4>
+                        <div class="chip-grid" id="time-container">
+                            <div class="chip">10:30 AM</div>
+                            <div class="chip selected">04:00 PM</div>
+                            <div class="chip">07:30 PM</div>
+                            <div class="chip">10:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="seat-section" class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="step-badge">3</div>
+                        <h2 class="text-2xl font-bold">Select Seats</h2>
+                    </div>
+                    <div class="flex gap-4 text-xs text-gray-400">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-[#2a2a35]"></div> Available</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-[#fbbf24]"></div> Selected</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-[#3f3f46]"></div> Booked</div>
+                    </div>
+                </div>
+
+                <div class="cinema-screen"></div>
+
+                <div class="flex justify-center">
+                    <div class="grid gap-3" id="seats-container" style="grid-template-columns: repeat(8, 1fr);">
+                        <!-- Seats will be generated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="summary-card">
+                <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Booking Summary</h3>
+                
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-400">Customer</span>
+                        <span class="font-semibold text-right text-white w-1/2" id="summary-customer">-</span>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-400">Movie</span>
+                        <span class="font-semibold text-right text-white w-1/2" id="summary-movie">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Cinema</span>
+                        <span class="font-semibold text-white">Hall 4, CineBook</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Date</span>
+                        <span class="font-semibold text-white" id="summary-date">Today</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Time</span>
+                        <span class="font-semibold text-white" id="summary-time">04:00 PM</span>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-400">Seats</span>
+                        <span class="font-semibold text-right text-[#fbbf24]" id="summary-seats">None</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-dashed border-white/20 pt-4 mb-2">
+                    <div class="flex justify-between items-end">
+                        <span class="text-gray-400">Total Amount</span>
+                        <span class="text-2xl font-bold text-[#fbbf24]"><span id="total-price">0</span> VNĐ</span>
+                    </div>
+                </div>
+
+                <button class="checkout-btn" id="checkout-btn" onclick="redirectToBooking()">
+                    Complete Booking via Client <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div id="booking-confirmation" class="booking-confirmation">
+        <div class="confirmation-content">
+            <h2 class="text-3xl font-bold mb-6 text-[#fbbf24]">Booking Confirmation</h2>
+            <div id="confirmation-details" class="space-y-4"></div>
+            <button onclick="closeConfirmation()" class="checkout-btn mt-6">Close</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

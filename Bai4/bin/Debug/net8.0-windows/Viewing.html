@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Tickets - CineBook Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0b0f;
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --primary-bg: #13131a;
+            --card-bg: #1c1c24;
+            --accent-gold: #fbbf24;
+            --accent-glow: rgba(251, 191, 36, 0.4);
+            --text-secondary: #9ca3af;
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0b0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-gold);
+        }
+
+        /* --- Header --- */
+        header {
+            background: rgba(19, 19, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Movie Cards (The Upgrade) --- */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .movie-card-label {
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* Hide actual radio input */
+        .movie-card-label input {
+            display: none;
+        }
+
+        .movie-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .poster-wrapper {
+            position: relative;
+            height: 320px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1c1c24 0%, #13131a 100%);
+        }
+
+        .poster-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .poster-wrapper img[src*="data:image/svg"] {
+            object-fit: contain;
+            padding: 20px;
+        }
+
+        .movie-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .movie-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .book-btn-mock {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover & Selected States */
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .movie-card:hover .poster-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .movie-card-label input:checked + .movie-card {
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .movie-card-label input:checked + .movie-card .book-btn-mock {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: #000;
+        }
+
+        /* --- Sections & Steps --- */
+        .step-badge {
+            background: var(--accent-gold);
+            color: #000;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* --- Chips for Date/Time --- */
+        .chip-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .chip {
+            padding: 10px 20px;
+            background: var(--primary-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .chip:hover {
+            border-color: var(--accent-gold);
+            color: #fff;
+        }
+
+        .chip.selected {
+            background: var(--accent-gold);
+            color: #000;
+            border-color: var(--accent-gold);
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+
+        /* --- Sidebar --- */
+        .summary-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 100px;
+        }
+
+        .checkout-btn {
+            background: linear-gradient(45deg, var(--accent-gold), #f59e0b);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 768px) {
+            .poster-wrapper { height: 200px; }
+            .movies-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="flex justify-between items-center px-6 py-4">
+        <a href="#" class="logo"><i class="fas fa-film mr-2"></i>CineBook</a>
+        <nav class="hidden md:flex gap-6 text-sm font-semibold text-gray-400">
+            <a href="#" class="hover:text-white transition">Movies</a>
+            <a href="#" class="hover:text-white transition">Cinemas</a>
+            <a href="#" class="hover:text-white transition">Offers</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
+                <i class="fas fa-user text-xs"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
+        
+        <div class="lg:col-span-2 space-y-10">
+
+            <section id="movie-section">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="step-badge">1</div>
+                    <h2 class="text-2xl font-bold">Select Movie</h2>
+                </div>
+
+                <div class="movies-grid" id="movies-container">
+                    <div class="text-center text-gray-400 py-20">
+                        <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+                        <p>Đang tải danh sách phim...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="datetime-section" class="bg-[#1c1c24] p-6 rounded-2xl border border-white/5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="step-badge">2</div>
+                    <h2 class="text-2xl font-bold">Date & Time</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-gray-400 text-sm uppercase tracking-wider mb-4">Select Date</h4>
+                        <div class="chip-grid" id="date-container">
+                            <div class="chip selected">Today</div>
+                            <div class="chip">Tomorrow</div>
+                            <div class="chip">Sat, 12 Oct</div>
+                            <div class="chip">Sun, 13 Oct</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-400 text-sm uppercase tracking-wider mb-4">Select Time</h4>
+                        <div class="chip-grid" id="time-container">
+                            <div class="chip">10:30 AM</div>
+                            <div class="chip selected">04:00 PM</div>
+                            <div class="chip">07:30 PM</div>
+                            <div class="chip">10:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="summary-card">
+                <h3 class="text-xl font-bold mb-6 border-b border-white/10 pb-4">Booking Summary</h3>
+                
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-start">
+                        <span class="text-gray-400">Movie</span>
+                        <span class="font-semibold text-right text-white w-1/2" id="summary-movie">Quantum Realm</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Cinema</span>
+                        <span class="font-semibold text-white">Hall 4, CineBook</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Date</span>
+                        <span class="font-semibold text-white" id="summary-date">Today</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Time</span>
+                        <span class="font-semibold text-white" id="summary-time">04:00 PM</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-dashed border-white/20 pt-4 mb-2">
+                    <div class="flex justify-between items-end">
+                        <span class="text-gray-400">Total Amount</span>
+                        <span class="text-2xl font-bold text-[#fbbf24]"><span id="total-price">170.000</span> VNĐ</span>
+                    </div>
+                </div>
+
+                <button class="checkout-btn" onclick="goToBooking()">
+                    Xem Chi Tiết <i class="fas fa-eye ml-2"></i>
+                </button>
+                <button class="checkout-btn mt-3 bg-blue-600 hover:bg-blue-700" onclick="window.location.href='/booking.html'">
+                    <i class="fas fa-ticket-alt mr-2"></i>Đặt Vé (Client-Server)
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let movies = [];
+        let selectedMovie = null;
+        let ticketPrice = 85000; // Default price in VNĐ
+
+        // Elements
+        const moviesContainer = document.getElementById('movies-container');
+        const summaryMovie = document.getElementById('summary-movie');
+        const totalPriceEl = document.getElementById('total-price');
+        const dateChips = document.querySelectorAll('#date-container .chip');
+        const timeChips = document.querySelectorAll('#time-container .chip');
+
+        // Load movies on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMovies();
+            setupEventListeners();
+            updateTotal();
+        });
+
+        // Load movies from API
+        async function loadMovies() {
+            try {
+                const response = await fetch('/api/movies');
+                movies = await response.json();
+                renderMovies();
+            } catch (error) {
+                console.error('Error loading movies:', error);
+                moviesContainer.innerHTML = `
+                    <div class="text-center text-red-400 py-20">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>Lỗi khi tải danh sách phim. Vui lòng thử lại sau.</p>
+                        <button onclick="loadMovies()" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">
+                            Tải lại
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // GIẢI PHÁP HIỂN THỊ HÌNH ẢNH
+        // ============================================
+        
+        // Cấu hình proxy server
+        // Có thể dùng proxy server riêng (port 3001) hoặc tích hợp vào server C# (port 8888)
+        const PROXY_CONFIG = {
+            // Nếu dùng Node.js proxy server riêng (chạy image-proxy.js)
+            useStandaloneProxy: false, // Set true nếu chạy Node.js server riêng
+            standaloneProxyUrl: 'http://localhost:3001',
+            // Nếu tích hợp vào server C# hiện tại
+            integratedProxyUrl: '/api/proxy-image' // Relative URL - dùng cùng server
+        };
+
+        /**
+         * Tạo URL proxy để bypass CORS
+         * Sử dụng API endpoint của server để fetch hình ảnh
+         */
+        function getProxiedImageUrl(originalUrl) {
+            if (!originalUrl || originalUrl.trim() === '') {
+                return null;
+            }
+            
+            // Decode URL nếu bị encode
+            let decodedUrl = originalUrl;
+            try {
+                // Decode nhiều lần nếu cần
+                while (decodedUrl.includes('%2F') || decodedUrl.includes('%2f')) {
+                    decodedUrl = decodeURIComponent(decodedUrl);
+                }
+            } catch (e) {
+                console.warn('URL decode failed:', e);
+            }
+            
+            // Chọn proxy endpoint dựa trên cấu hình
+            const proxyBase = PROXY_CONFIG.useStandaloneProxy 
+                ? PROXY_CONFIG.standaloneProxyUrl 
+                : PROXY_CONFIG.integratedProxyUrl;
+            
+            // Sử dụng proxy endpoint
+            return `${proxyBase}?url=${encodeURIComponent(decodedUrl)}`;
+        }
+
+        /**
+         * Tạo SVG placeholder khi không load được hình
+         */
+        function createPlaceholderSVG(text, color = '#fbbf24') {
+            const displayText = text.length > 20 ? text.substring(0, 20) + '...' : text;
+            const svg = `
+                <svg width="300" height="450" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1c1c24;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#13131a;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="300" height="450" fill="url(#grad)"/>
+                    <rect x="50" y="150" width="200" height="150" rx="10" fill="#2a2a35"/>
+                    <circle cx="150" cy="200" r="30" fill="${color}" opacity="0.3"/>
+                    <path d="M135 200 L145 210 L165 190" stroke="${color}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <text x="50%" y="75%" font-family="Outfit, Arial, sans-serif" font-size="14" 
+                          fill="${color}" text-anchor="middle" font-weight="600">${displayText}</text>
+                    <text x="50%" y="82%" font-family="Outfit, Arial, sans-serif" font-size="11" 
+                          fill="#6b7280" text-anchor="middle">Đang tải hình...</text>
+                </svg>
+            `;
+            return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+        }
+
+        /**
+         * Tạo error placeholder SVG
+         */
+        function createErrorPlaceholderSVG(text) {
+            const displayText = text.length > 20 ? text.substring(0, 20) + '...' : text;
+            const svg = `
+                <svg width="300" height="450" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1c1c24;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#13131a;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="300" height="450" fill="url(#grad)"/>
+                    <rect x="75" y="170" width="150" height="110" rx="10" fill="#2a2a35"/>
+                    <circle cx="150" cy="210" r="25" fill="#374151"/>
+                    <text x="150" y="218" font-family="Arial" font-size="24" fill="#fbbf24" text-anchor="middle">🎬</text>
+                    <text x="50%" y="72%" font-family="Outfit, Arial, sans-serif" font-size="14" 
+                          fill="#fbbf24" text-anchor="middle" font-weight="600">${displayText}</text>
+                    <text x="50%" y="80%" font-family="Outfit, Arial, sans-serif" font-size="11" 
+                          fill="#6b7280" text-anchor="middle">Không tải được poster</text>
+                </svg>
+            `;
+            return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+        }
+
+        /**
+         * Xử lý khi hình load thành công
+         */
+        window.handleImageLoad = function(img) {
+            console.log('✅ Image loaded:', img.src.substring(0, 50) + '...');
+            img.style.opacity = '1';
+            img.classList.remove('loading');
+        };
+
+        /**
+         * Xử lý khi hình load thất bại
+         * Thử các phương pháp khác nhau trước khi hiện placeholder
+         */
+        window.handleImageError = function(imgElement, movieTitle = 'Movie') {
+            const originalUrl = imgElement.getAttribute('data-original-src');
+            const retryCount = parseInt(imgElement.getAttribute('data-retry') || '0');
+            
+            console.warn(`❌ Image load failed (attempt ${retryCount + 1}):`, originalUrl);
+            
+            // Xóa onerror để tránh infinite loop
+            imgElement.onerror = null;
+            
+            // Thử các phương pháp khác nhau
+            if (retryCount === 0 && originalUrl) {
+                // Lần 1: Thử proxy URL
+                imgElement.setAttribute('data-retry', '1');
+                const proxyUrl = getProxiedImageUrl(originalUrl);
+                if (proxyUrl) {
+                    console.log('🔄 Trying proxy URL...');
+                    imgElement.onerror = function() { handleImageError(this, movieTitle); };
+                    imgElement.src = proxyUrl;
+                    return;
+                }
+            }
+            
+            if (retryCount === 1 && originalUrl) {
+                // Lần 2: Thử direct URL đã decode
+                imgElement.setAttribute('data-retry', '2');
+                let decodedUrl = originalUrl;
+                try {
+                    decodedUrl = decodeURIComponent(originalUrl);
+                    if (decodedUrl !== originalUrl) {
+                        console.log('🔄 Trying decoded URL...');
+                        imgElement.onerror = function() { handleImageError(this, movieTitle); };
+                        imgElement.src = decodedUrl;
+                        return;
+                    }
+                } catch (e) {}
+            }
+            
+            // Tất cả đều thất bại → Hiện placeholder
+            console.log('📷 Showing placeholder for:', movieTitle);
+            imgElement.src = createErrorPlaceholderSVG(movieTitle);
+            imgElement.style.opacity = '1';
+            imgElement.style.objectFit = 'contain';
+            imgElement.classList.remove('loading');
+        };
+
+        /**
+         * Render danh sách phim
+         */
+        function renderMovies() {
+            if (movies.length === 0) {
+                moviesContainer.innerHTML = `
+                    <div class="text-center text-gray-400 py-20 col-span-full">
+                        <i class="fas fa-film text-4xl mb-4 text-yellow-500"></i>
+                        <p>Chưa có phim nào. Vui lòng crawl phim từ BetaCinemas.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            moviesContainer.innerHTML = movies.map((movie, index) => {
+                const posterUrl = movie.poster || '';
+                const title = movie.title || 'Unknown Movie';
+                const escapedTitle = title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                const titleForError = title.replace(/'/g, "\\'");
+                
+                // Tạo URL cho hình - thử proxy trước
+                let imgSrc = createPlaceholderSVG(title); // Placeholder ban đầu
+                
+                // Nếu có poster URL, sẽ load sau
+                const hasPoster = posterUrl && posterUrl.trim() !== '';
+                
+                return `
+                <label class="movie-card-label">
+                    <input type="radio" name="movie" value="${escapedTitle}" 
+                           data-price="${movie.basePrice || 85000}" 
+                           data-index="${index}" 
+                           ${index === 0 ? 'checked' : ''}>
+                    <div class="movie-card">
+                        <div class="poster-wrapper">
+                            <img 
+                                src="${hasPoster ? getProxiedImageUrl(posterUrl) || posterUrl : imgSrc}"
+                                alt="${escapedTitle}"
+                                class="movie-poster ${hasPoster ? 'loading' : ''}"
+                                data-original-src="${posterUrl}"
+                                data-retry="0"
+                                data-movie-index="${index}"
+                                ${hasPoster ? `onerror="handleImageError(this, '${titleForError}')"` : ''}
+                                onload="handleImageLoad(this)"
+                                referrerpolicy="no-referrer"
+                                crossorigin="anonymous"
+                                loading="lazy"
+                                style="width: 100%; height: 100%; object-fit: cover; ${hasPoster ? 'opacity: 0;' : 'opacity: 1; object-fit: contain;'} transition: opacity 0.3s;"
+                            />
+                        </div>
+                        <div class="movie-content">
+                            <div>
+                                <h3 class="movie-title">
+                                    ${movie.detailUrl ? 
+                                        `<a href="${movie.detailUrl}" target="_blank" onclick="event.stopPropagation();" 
+                                            class="hover:text-yellow-400 transition">${title}</a>` : 
+                                        title}
+                                </h3>
+                                <div class="movie-meta">
+                                    ${movie.duration ? `<span><i class="fas fa-clock text-yellow-500 mr-1"></i>${movie.duration}</span>` : ''}
+                                    ${movie.genre ? `<span><i class="fas fa-film text-yellow-500 mr-1"></i>${movie.genre}</span>` : ''}
+                                    ${movie.basePrice ? `<span><i class="fas fa-tag text-yellow-500 mr-1"></i>${movie.basePrice.toLocaleString('vi-VN')} VNĐ</span>` : ''}
+                                </div>
+                                ${movie.description ? `<p class="text-xs text-gray-400 mt-2 line-clamp-2">${movie.description}</p>` : ''}
+                            </div>
+                            <button class="book-btn-mock" type="button" data-detail-url="${movie.detailUrl || ''}" data-movie-index="${index}">Chọn phim</button>
+                        </div>
+                    </div>
+                </label>
+            `;
+            }).join('');
+
+            // Event listeners cho movie selection
+            document.querySelectorAll('input[name="movie"]').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    selectedMovie = movies[index];
+                    ticketPrice = parseFloat(e.target.dataset.price) || 85000;
+                    summaryMovie.textContent = selectedMovie.title;
+                    updateTotal();
+
+                    document.getElementById('datetime-section').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                });
+            });
+
+            // Event listeners cho button "Chọn phim" - điều hướng đến detailUrl
+            document.querySelectorAll('.book-btn-mock').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Ngăn event bubble lên label
+                    const detailUrl = button.getAttribute('data-detail-url');
+                    const movieIndex = parseInt(button.getAttribute('data-movie-index'));
+                    
+                    if (detailUrl && detailUrl.trim() !== '') {
+                        // Điều hướng đến detailUrl của phim
+                        window.open(detailUrl, '_blank');
+                    } else {
+                        alert('Phim này chưa có link chi tiết!');
+                    }
+                });
+            });
+
+            // Set first movie as selected
+            if (movies.length > 0) {
+                selectedMovie = movies[0];
+                ticketPrice = movies[0].basePrice || 85000;
+                summaryMovie.textContent = selectedMovie.title;
+                updateTotal();
+            }
+        }
+
+        function setupEventListeners() {
+            // Chip Selection (Date/Time)
+            function setupChips(chips, summaryId) {
+                chips.forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        chips.forEach(c => c.classList.remove('selected'));
+                        chip.classList.add('selected');
+                        document.getElementById(summaryId).textContent = chip.textContent;
+                    });
+                });
+            }
+            setupChips(dateChips, 'summary-date');
+            setupChips(timeChips, 'summary-time');
+        }
+
+        function updateTotal() {
+            const total = ticketPrice;
+            totalPriceEl.textContent = total.toLocaleString('vi-VN');
+        }
+
+        function goToBooking() {
+            if (!selectedMovie) {
+                alert('Vui lòng chọn phim trước!');
+                return;
+            }
+            // Điều hướng đến detailUrl của phim đã chọn
+            if (selectedMovie.detailUrl) {
+                window.open(selectedMovie.detailUrl, '_blank');
+            } else {
+                alert('Phim này chưa có link chi tiết!');
+            }
+        }
+    </script>
+</body>
+</html>

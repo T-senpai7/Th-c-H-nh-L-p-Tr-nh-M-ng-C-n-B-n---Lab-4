@@ -1,0 +1,34 @@
+﻿[
+  {
+    "TenNguoiDat": "Minh",
+    "TenPhim": "5 Centimet Trên Giây",
+    "Phong": "Phòng 1",
+    "Ghe": "A1",
+    "Gia": 21250,
+    "NoteForMore": ""
+  },
+  {
+    "TenNguoiDat": "Minh Nhựa",
+    "TenPhim": "Anh Trai Say Xe",
+    "Phong": "Phòng 1",
+    "Ghe": "A2",
+    "Gia": 85000,
+    "NoteForMore": ""
+  },
+  {
+    "TenNguoiDat": "Tiến",
+    "TenPhim": "Cưới Vợ Cho Cha",
+    "Phong": "Phòng 1",
+    "Ghe": "A4",
+    "Gia": 85000,
+    "NoteForMore": ""
+  },
+  {
+    "TenNguoiDat": "Minh Nhựa",
+    "TenPhim": "5 Centimet Trên Giây",
+    "Phong": "Phòng 1",
+    "Ghe": "A5",
+    "Gia": 21250,
+    "NoteForMore": ""
+  }
+]
